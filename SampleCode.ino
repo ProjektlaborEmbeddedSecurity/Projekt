@@ -95,17 +95,17 @@ void setup() {
       //ESP8266.println("AT+CIPSEND=4,"+headerLen);
       //ESP8266.println(header);
 
-    String headerPOST ="POST /api/feeds/welcome-feed/data/send HTTP/1.1\n";
-    headerPOST  += "Host: io.adafruit.com\n";
-    headerPOST  += "Connection: close\n";
-    headerPOST  += "Accept-Charset: ISO-8859-1,UTF-8;q=0.7,*;q=0.7\n ";
-    headerPOST  += "Cache-Control: no-cache \n ";
-    headerPOST  += "Accept-Language: de,en;q=0.7,en-us;q=0.3\n";
-    headerPOST  += "Referer: http://web-sniffer.net/\n";
-    headerPOST  += "Content-type: application/x-www-form-urlencoded\n";
-    headerPOST  += "Content-length: " + msgPost.length() +"\n\n";
-    String msgPOST = "x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202\n";
-      msgPOST += " {\"feedID\": \"welcome-feed\", \"data\": {\"value\": 586}}";
+//    String headerPOST ="POST /api/feeds/welcome-feed/data/send HTTP/1.1\n";
+//    headerPOST  += "Host: io.adafruit.com\n";
+ //   headerPOST  += "Connection: close\n";
+  //  headerPOST  += "Accept-Charset: ISO-8859-1,UTF-8;q=0.7,*;q=0.7\n ";
+  // headerPOST  += "Cache-Control: no-cache \n ";
+   // headerPOST  += "Accept-Language: de,en;q=0.7,en-us;q=0.3\n";
+    //headerPOST  += "Referer: http://web-sniffer.net/\n";
+    //headerPOST  += "Content-type: application/x-www-form-urlencoded\n";
+    //headerPOST  += "Content-length: " + msgPost.length() +"\n\n";
+    //String msgPOST = "x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202\n";
+     // msgPOST += " {\"feedID\": \"welcome-feed\", \"data\": {\"value\": 586}}";
   
   
   //}while(FAIL_8266);
