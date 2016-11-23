@@ -105,7 +105,7 @@ void setup() {
     headerPOST  += "Content-type: application/x-www-form-urlencoded\n";
     headerPOST  += "Content-length: " + msgPost.length() +"\n\n";
     String msgPOST = "x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202\n";
-      msgPOST += " {"value": 586}";
+      msgPOST += " {\"feedID\": \"welcome-feed\", \"data\": {\"value\": 586}}";
   
   
   //}while(FAIL_8266);
