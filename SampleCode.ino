@@ -90,24 +90,31 @@ void setup() {
     headerGET  += "Accept-Language: de,en;q=0.7,en-us;q=0.3\n";
     headerGET  += "Referer: http://web-sniffer.net/\n\n";
       
-      int headerLen = header.length();
-      Serial.println("======= AT+CIPSEND=4,"+headerLen);
-      //ESP8266.println("AT+CIPSEND=4,"+headerLen);
-      //ESP8266.println(header);
+      int headerGetLen = headerGET.length();
+      Serial.println("======= AT+CIPSEND=4,"+headerGetLen);
+      //ESP8266.println("AT+CIPSEND=4,"+headerGetLen);
+      //ESP8266.println(headerGET);
 
-//    String headerPOST ="POST /api/feeds/welcome-feed/data/send HTTP/1.1\n";
-//    headerPOST  += "Host: io.adafruit.com\n";
- //   headerPOST  += "Connection: close\n";
-  //  headerPOST  += "Accept-Charset: ISO-8859-1,UTF-8;q=0.7,*;q=0.7\n ";
-  // headerPOST  += "Cache-Control: no-cache \n ";
-   // headerPOST  += "Accept-Language: de,en;q=0.7,en-us;q=0.3\n";
-    //headerPOST  += "Referer: http://web-sniffer.net/\n";
-    //headerPOST  += "Content-type: application/x-www-form-urlencoded\n";
-    //headerPOST  += "Content-length: " + msgPost.length() +"\n\n";
-    //String msgPOST = "x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202\n";
-     // msgPOST += " {\"feedID\": \"welcome-feed\", \"data\": {\"value\": 586}}";
-  
-  
+    String headerPOST ="POST /api/feeds/welcome-feed/data/send HTTP/1.1\n";
+    headerPOST  += "Host: io.adafruit.com\n";
+    headerPOST  += "Connection: close\n";
+    headerPOST  += "Accept-Charset: ISO-8859-1,UTF-8;q=0.7,*;q=0.7\n ";
+    headerPOST  += "Cache-Control: no-cache \n ";
+    headerPOST  += "Accept-Language: de,en;q=0.7,en-us;q=0.3\n";
+    headerPOST  += "Referer: http://web-sniffer.net/\n";
+    headerPOST  += "Content-type: application/x-www-form-urlencoded\n";
+
+    String msgPOST = "x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202\n";
+    msgPOST += " {\"feedID\": \"welcome-feed\", \"data\": {\"value\": 586}}";
+
+     int msgPostLen = msgPOST.length();
+    headerPOST  += ("Content-length: %d\n\n",msgPostLen);
+    
+    int headerMsgPostLen = msgPostLen + headerPOST.length();
+    Serial.println("======= AT+CIPSEND=4,"+headerMsgPostLen);
+      //ESP8266.println("AT+CIPSEND=4,"+headerMsgPostLen);
+      //ESP8266.println(headerPOST);
+  //ESP8266.println(msgPOST);
   //}while(FAIL_8266);
  
 }
