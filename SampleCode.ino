@@ -10,9 +10,9 @@ pin 53 - ESP8266 CH_PD (Always High)
 enum WaitFor { OK ,SEND_OK, READY };
 
 #define ESP8266 Serial3
-String SSID = "xxx";
-String PASSWORD = "xxx";
-String IpAddress = "xxx"; // IP Addresse muss im eigenen Subnetz liegen
+String SSID = "EasyBox-J462875";
+String PASSWORD = "BestesWLAN16!&";
+String IpAddress = "192.168.2.50";
 
 
 #define SERVER "www.google.com"
@@ -20,10 +20,9 @@ String IpAddress = "xxx"; // IP Addresse muss im eigenen Subnetz liegen
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883  
 
-
 //always high
 int CH_PD_8266 = 53;
-
+int circledValue = 0;
 boolean FAIL_8266 = false;
 
 void setup() {
@@ -68,7 +67,7 @@ void setup() {
       waitfromESP8266(10, OK);
       cwGetIP();
 
-     sendValue("test-feed",56);
+    // sendValue("test-feed",56);
 }
 
 void loop() {
@@ -76,6 +75,20 @@ void loop() {
     char a = Serial.read();
     Serial3.write(a);
   }
+
+  if (sendValue("test-feed",circledValue))
+  {
+    circledValue += 50;
+    delay (10000);//10s
+    if (circledValue > 333)
+      circledValue = 0;
+  }
+  else
+  {
+    Serial.println("Send failed");
+    }
+
+
 }
 
 bool sendValue (String feed, int value)
