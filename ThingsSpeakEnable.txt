@@ -1,0 +1,8 @@
+1. DHT.h
+   Via Arduino IDE
+   SimpleDHT
+   DHT sensor library by Adafruit
+2. Adafruit_Sensor.h
+   Header via github runterladen 
+   https://github.com/adafruit/Adafruit_Sensor/blob/master/Adafruit_Sensor.h
+   In ../Dokumente/Arduino/libraries/DHT_sensor_library
