@@ -10,25 +10,45 @@ pin 53 - ESP8266 CH_PD (Always High)
 enum WaitFor { OK ,SEND_OK, READY };
 
 #define ESP8266 Serial3
-String SSID = "EasyBox-J462875";
-String PASSWORD = "BestesWLAN16!&";
-String IpAddress = "192.168.2.50";
+String SSID = "xxx";
+String PASSWORD = "xxx";
+String IpAddress = "xxx";
 
 
 #define SERVER "www.google.com"
 #define PORT 80
-#define AIO_SERVER      "io.adafruit.com"
+#define AIO_SERVER "io.adafruit.com"
 #define AIO_SERVERPORT  1883  
+//#define AIO_KEY "xxx" //Julia
+#define AIO_KEY "xxx" //Klemens
 
 //always high
 int CH_PD_8266 = 53;
 int circledValue = 0;
 boolean FAIL_8266 = false;
 
+//Ultraschallsensor
+const int trigPin = 2;
+const int echoPin = 4;
+long old_val = 0;
+long dif = 0;
+char semaphor = 0;
+double threshold = 0;
+
+int counter = 0;
+int counterfail =0;
+int countersend =0;
+
 void setup() {
   pinMode(CH_PD_8266, OUTPUT);
   digitalWrite(CH_PD_8266, HIGH);
   delay(1000);
+
+    pinMode(trigPin, OUTPUT);
+    digitalWrite(trigPin, LOW);
+
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
 
  // do{
     Serial.begin(115200);
@@ -71,24 +91,83 @@ void setup() {
 }
 
 void loop() {
-    while (Serial.available() > 0) {
-    char a = Serial.read();
-    Serial3.write(a);
-  }
+    while (Serial.available() > 0) 
+    {
+      char a = Serial.read();
+      Serial3.write(a);
+   }
 
-  if (sendValue("test-feed",circledValue))
+  int duration, inches, cm;
+  
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  
+  duration = pulseIn(echoPin, HIGH);
+  // convert the time into a distance
+  inches = microsecondsToInches(duration);
+  cm = microsecondsToCentimeters(duration);
+  
+  dif = cm - old_val;
+
+  if (dif < 0)
+      dif = 0 - dif;
+
+  if (semaphor == 0){
+    threshold = (double) dif * 0.01;
+    semaphor = 1;
+    Serial.println();
+    Serial.println("Thresh: ");
+    Serial.println(threshold);
+  }
+  if ((double)dif > threshold){
+    Serial.println();
+    Serial.print("Great change!");
+    Serial.println();  
+  }
+  old_val = cm;
+
+  Serial.print(inches);
+  Serial.print("in, ");
+  Serial.print(cm);
+  Serial.print("cm");
+  Serial.println();
+  Serial.print("Difference");
+  Serial.println();
+  Serial.print(dif);
+  Serial.println();  
+  
+
+  if (sendValue("present",dif))
+  {}
+ /* if (sendValue("present",circledValue))
   {
     circledValue += 50;
-    delay (10000);//10s
+    delay (5000);//5s
     if (circledValue > 333)
       circledValue = 0;
-  }
+  }*/
   else
   {
     Serial.println("Send failed");
-    }
+  }
 
-
+if (counter == 100)
+{
+  Serial.print("Send: ");
+  Serial.print(counter);
+  Serial.print(" Send successed: ");
+  Serial.print(countersend);
+  Serial.print(" Send failed: ");
+  Serial.print(counterfail);
+  counter = 0;
+  counterfail =0;
+  countersend =0;
+}
+  delay(500);
 }
 
 bool sendValue (String feed, int value)
@@ -102,11 +181,15 @@ bool sendValue (String feed, int value)
            
   // Test Nachricht
   Serial.println("= startString,");
-  //String headerGET = "GET /api/feeds?x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202 HTTP/1.1\r\n"; // FeedListe
-  //String headerGET = "GET /api/feeds/twar?x-aio-key=b4ef461011dd40a5ba22e39c36d6de87 HTTP/1.1\n"; // DHT Wert abfragen
+  //String headerGET = "GET /api/feeds?x-aio-key=xxx HTTP/1.1\r\n"; // FeedListe
+  //String headerGET = "GET /api/feeds/twar?x-aio-key=xx HTTP/1.1\n"; // DHT Wert abfragen
 
-   //GET /api/groups/weather/send.json?x-aio-key=f27fa137d3934140a44974f37003de00&testfeed=1 HTTP/1.1\r\n
-  String headerGET = "GET /api/groups/weather/send.json?x-aio-key=129f2e69ceed4cc0a71012e5cd1e9202&";
+   //GET /api/groups/weather/send.json?x-aio-key=xxxx&testfeed=1 HTTP/1.1\r\n
+ // String headerGET = "GET /api/groups/project/send.json?x-aio-key=xxx";
+  
+  String headerGET = "GET /api/groups/embedded/send.json?x-aio-key=xxx";
+ // headerGET += AIO_KEY; //xxx
+  headerGET += "&";
   headerGET += feed;
   headerGET += "=";
   headerGET += value;
@@ -114,7 +197,7 @@ bool sendValue (String feed, int value)
   headerGET  += "Host: io.adafruit.com\r\n\r\n";
       
   int headerGetLen = headerGET.length();
-  //Serial.println(headerGET);
+ // Serial.println(headerGET);
   // Serial.println("= AT+CIPSEND=4,"+headerGetLen);
       
   // if (waitOKfromESP8266(1000))
@@ -122,7 +205,7 @@ bool sendValue (String feed, int value)
   ESP8266.println(headerGetLen);
 
       
-  if (waitfromESP8266(100, OK))
+  if (waitfromESP8266(10, OK))
   {
     //Serial.println("send");
     ESP8266.print(headerGET);
@@ -140,13 +223,13 @@ bool sendValue (String feed, int value)
   }
 }
 
-
+/*
 void serialEvent3() {
   while (ESP8266.available() > 0) {
     char a = ESP8266.read();
     Serial.write(a);
   }
-}
+}*/
 
 
 void cwJoinAP()
@@ -194,20 +277,22 @@ boolean waitfromESP8266(int timeout, int type)
 {
   do{
     Serial.println("= wait .. ");
-    delay(50);
+    delay(100);
     switch (type)
     {
       case OK:
       {
-        if(ESP8266.find("OK"))
+        if(ESP8266.find((char*)"OK"))
         {
           return true;
+          counter ++;
+          countersend ++;
         }
         break;
       }
       case SEND_OK:
       {
-        if(ESP8266.find("SEND OK"))
+        if(ESP8266.find((char*)"SEND OK"))
         {
           return true;
         }
@@ -215,7 +300,7 @@ boolean waitfromESP8266(int timeout, int type)
       }
       case READY:
       {
-        if(ESP8266.find("ready"))
+        if(ESP8266.find((char*)"ready"))
         {
           return true;
         }
@@ -224,8 +309,28 @@ boolean waitfromESP8266(int timeout, int type)
     }
     //delay(50);
   }while((timeout--)>0);
+
+
+  counter ++;
+  counterfail ++;
   return false;
 }
+long microsecondsToInches(long microseconds)
+{
+  // According to Parallax's datasheet for the PING))), there are
+  // 73.746 microseconds per inch (i.e. sound travels at 1130 feet per
+  // second).  This gives the distance travelled by the ping, outbound
+  // and return, so we divide by 2 to get the distance of the obstacle.
+  // See: http://www.parallax.com/dl/docs/prod/acc/28015-PING-v1.3.pdf
+  return microseconds / 74 / 2;
+}
 
+long microsecondsToCentimeters(long microseconds)
+{
+  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
+  // The ping travels out and back, so to find the distance of the
+  // object we take half of the distance travelled.
+  return microseconds / 29 / 2;
+}
 
 
