@@ -1,4 +1,4 @@
-/*
+c/*
 Arduino Due - ESP 8266 WiFi Module
 Serial (Tx/Rx) communicate to PC via USB
 Serial3 (Tx3/Rx3) connect to ESP8266
@@ -6,6 +6,15 @@ Tx3 - ESP8266 Rx
 Rx3 - ESP8266 Tx
 pin 53 - ESP8266 CH_PD (Always High)
 */
+#include <SimpleDHT.h>
+
+// for DHT11, 
+//      VCC: 5V or 3V
+//      GND: GND
+//      DATA: 2
+int pinDHT11 = 2;
+SimpleDHT11 dht11;
+
 
 enum WaitFor { OK ,SEND_OK, READY };
 
@@ -90,6 +99,11 @@ void setup() {
     // sendValue("test-feed",56);
 }
 
+int sem = 0;
+unsigned long CT;
+unsigned long CR;
+unsigned long EP;
+
 void loop() {
     while (Serial.available() > 0) 
     {
@@ -98,6 +112,24 @@ void loop() {
    }
 
   int duration, inches, cm;
+  byte temperature = 0;
+  byte humidity = 0;
+  while (dht11.read(pinDHT11, &temperature, &humidity, NULL)) {
+    if (sem == 0){
+      CT = millis();
+      sem = 1;
+    }
+  }
+  sem = 0;
+  CR = millis();
+  EP = CR - CT;
+  CT = 0;
+  Serial.print("Time since last corect: ");
+  Serial.println(EP);
+  Serial.print("Sample OK: ");
+  Serial.print((int)temperature); Serial.print(" *C, "); 
+  Serial.print((int)humidity); Serial.println(" %");
+  
   
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -141,7 +173,7 @@ void loop() {
   Serial.println();  
   
 
-  if (sendValue("present",dif))
+  if (sendValue("present",dif, "temperature", temperature,"humidity", humidity))
   {}
  /* if (sendValue("present",circledValue))
   {
@@ -170,7 +202,7 @@ if (counter == 100)
   delay(500);
 }
 
-bool sendValue (String feed, int value)
+bool sendValue (String feed, int usvalue, String feed2,byte temp, String feed3,byte hum)
 {
   String cmd= "AT+CIPSTART=4,\"TCP\",\"io.adafruit.com\",80";
          
@@ -192,7 +224,15 @@ bool sendValue (String feed, int value)
   headerGET += "&";
   headerGET += feed;
   headerGET += "=";
-  headerGET += value;
+  headerGET += usvalue;
+  headerGET += "&";
+  headerGET += feed2;
+  headerGET += "=";
+  headerGET += temp;
+  headerGET += "&";
+  headerGET += feed3;
+  headerGET += "=";
+  headerGET += hum;
   headerGET += " HTTP/1.1\r\n";
   headerGET  += "Host: io.adafruit.com\r\n\r\n";
       
