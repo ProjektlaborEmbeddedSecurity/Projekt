@@ -1,4 +1,4 @@
-c/*
+/*
 Arduino Due - ESP 8266 WiFi Module
 Serial (Tx/Rx) communicate to PC via USB
 Serial3 (Tx3/Rx3) connect to ESP8266
@@ -11,17 +11,17 @@ pin 53 - ESP8266 CH_PD (Always High)
 // for DHT11, 
 //      VCC: 5V or 3V
 //      GND: GND
-//      DATA: 2
-int pinDHT11 = 2;
+//      DATA: 3
+int pinDHT11 = 3;
 SimpleDHT11 dht11;
 
 
 enum WaitFor { OK ,SEND_OK, READY };
 
 #define ESP8266 Serial3
-String SSID = "xxx";
-String PASSWORD = "xxx";
-String IpAddress = "xxx";
+String SSID = "PES";
+String PASSWORD = "arduino_pes";
+String IpAddress = "192.168.178.3";
 
 
 #define SERVER "www.google.com"
@@ -173,7 +173,7 @@ void loop() {
   Serial.println();  
   
 
-  if (sendValue("present",dif, "temperature", temperature,"humidity", humidity))
+  if (sendValue("present",dif, "temperature", (int)temperature,"humidity", (int)humidity))
   {}
  /* if (sendValue("present",circledValue))
   {
@@ -202,11 +202,11 @@ if (counter == 100)
   delay(500);
 }
 
-bool sendValue (String feed, int usvalue, String feed2,byte temp, String feed3,byte hum)
+bool sendValue (String feed, int usvalue, String feed2,int temp, String feed3,int hum)
 {
   String cmd= "AT+CIPSTART=4,\"TCP\",\"io.adafruit.com\",80";
          
-  Serial.println("= "+cmd);
+  //Serial.println("= "+cmd);
   ESP8266.println(cmd);
 
   delay(500);
@@ -219,8 +219,8 @@ bool sendValue (String feed, int usvalue, String feed2,byte temp, String feed3,b
    //GET /api/groups/weather/send.json?x-aio-key=xxxx&testfeed=1 HTTP/1.1\r\n
  // String headerGET = "GET /api/groups/project/send.json?x-aio-key=xxx";
   
-  String headerGET = "GET /api/groups/embedded/send.json?x-aio-key=xxx";
- // headerGET += AIO_KEY; //xxx
+  String headerGET = "GET /api/groups/embedded/send.json?x-aio-key=";
+  headerGET += AIO_KEY; //xxx
   headerGET += "&";
   headerGET += feed;
   headerGET += "=";
@@ -237,7 +237,7 @@ bool sendValue (String feed, int usvalue, String feed2,byte temp, String feed3,b
   headerGET  += "Host: io.adafruit.com\r\n\r\n";
       
   int headerGetLen = headerGET.length();
- // Serial.println(headerGET);
+  //Serial.println(headerGET);
   // Serial.println("= AT+CIPSEND=4,"+headerGetLen);
       
   // if (waitOKfromESP8266(1000))
