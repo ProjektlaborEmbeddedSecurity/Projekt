@@ -36,6 +36,9 @@ SimpleDHT11 dht11;
 
 enum WaitFor { OK ,SEND_OK, READY };
 
+enum Zustand {FensterZu, ZuWarm, ZuKalt, ZuWarmZuFeucht, ZuKaltZuFeucht, ZuWarmZuTrocken, ZuKaltZuTrocken, ZuFeucht, ZuTrocken };
+
+
 #define ESP8266 Serial3
 String SSID = "PES";
 String PASSWORD = "arduino_pes";
@@ -166,40 +169,40 @@ void loop() {
 	  offen = 1;
   }else{
 	  offen = 0;
-	  Zustand = 0;
+	  Zustand = FensterZu;
   }
   
   if (offen == 1){
 	  
 	  //TEMP
 	  if (temp_up_thr > temperature){
-				Zustand = 1; //zu warm (und feuchtigkeit ok)
+				Zustand = ZuWarm; //zu warm (und feuchtigkeit ok)
 	  }else{
 		  if (temp_down_thr < temperature){
-				Zustand = 2; //zu kalt (und feuchtigkeit ok)
+				Zustand = ZuKalt; //zu kalt (und feuchtigkeit ok)
 		  }
 		}
 	  
 	  //Humid
 	 if (humidity_up_thr > humidity){
-			if(Zustand == 1)
-				Zustand = 3; //zu warm & zu feucht
+			if(Zustand == ZuWarm)
+				Zustand = ZuWarmZuFeucht; //zu warm & zu feucht
 			else{ 
-				if (Zustand == 2){
-					Zustand = 4; //zu kalt & zu feucht
+				if (Zustand == ZuKalt){
+					Zustand = ZuKaltZuFeucht; //zu kalt & zu feucht
 			    }else{
-					Zustand = 7; //nur zu feucht
+					Zustand = ZuFeucht; //nur zu feucht
 				}
 			}
 	}else{
 		  if(humidity_down_thr < humidity) {
-			 if (Zustand == 1)
-				 Zustand = 5; //zu warm & zu trocken
+			 if (Zustand == ZuWarm)
+				 Zustand = ZuWarmZuTrocken; //zu warm & zu trocken
 			 else{
 				 if (Zustand == 2){
-					Zustand = 6; //zu kalt & zu trocken
+					Zustand = ZuKaltZuTrocken; //zu kalt & zu trocken
 				 }else{
-					 Zustand = 8; //nur zu trocken
+					 Zustand = ZuTrocken; //nur zu trocken
 				 }
 			 }
 		  }
