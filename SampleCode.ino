@@ -183,9 +183,11 @@ void loop() {
 	  if (humidity_up_thr > humidity){
 			if(Zustand == 1)
 				Zustand = 3; //zu warm & zu feucht
-			else
-				Zustand = 4; //zu kalt & zu feucht
-	  }else{
+			else{ 
+				if (Zustand == 2)
+					Zustand = 4; //zu kalt & zu feucht
+			    }
+	}else{
 		  if(humidity_down_thr < humidity) {
 			 if (Zustand == 1)
 				 Zustand = 5; //zu warm & zu trocken
