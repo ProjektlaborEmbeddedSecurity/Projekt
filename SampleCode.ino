@@ -168,6 +168,7 @@ void loop() {
 	  offen = 0;
 	  Zustand = 0;
   }
+  
   if (offen == 1){
 	  
 	  //TEMP
@@ -180,19 +181,27 @@ void loop() {
 		}
 	  
 	  //Humid
-	  if (humidity_up_thr > humidity){
+	 if (humidity_up_thr > humidity){
 			if(Zustand == 1)
 				Zustand = 3; //zu warm & zu feucht
 			else{ 
-				if (Zustand == 2)
+				if (Zustand == 2){
 					Zustand = 4; //zu kalt & zu feucht
-			    }
+			    }else{
+					Zustand = 7; //nur zu feucht
+				}
+			}
 	}else{
 		  if(humidity_down_thr < humidity) {
 			 if (Zustand == 1)
 				 Zustand = 5; //zu warm & zu trocken
-			 else
-				 Zustand = 6; //zu kalt & zu trocken
+			 else{
+				 if (Zustand == 2){
+					Zustand = 6; //zu kalt & zu trocken
+				 }else{
+					 Zustand = 8; //nur zu trocken
+				 }
+			 }
 		  }
 	  }
   }
