@@ -425,18 +425,18 @@ int Zustandsmaschine(int offen, int temperature, int humidity,int temp_up_thr, i
  if (offen == 1){
 	  Serial.println("Fenster offen");
 	  //TEMP
-	  if (temp_up_thr > temperature){
+	  if (temp_up_thr < temperature){
 				Zustand = FeOZuWarm; //zu warm (und feuchtigkeit ok)
 				Serial.println("Zu warm");
 	  }else{
-		  if (temp_down_thr < temperature){
+		  if (temp_down_thr > temperature){
 				Zustand = FeOZuKalt; //zu kalt (und feuchtigkeit ok)
 				Serial.print("Zu kalt");
 		  }
 		}
 	  
 	  //Humid
-	 if (humidity_up_thr > humidity){
+	 if (humidity_up_thr < humidity){
 			if(Zustand == ZuWarm)
 				Zustand = FeOZuWarmZuFeucht; //zu warm & zu feucht
 				Serial.println("Zu feucht & zu warm");
@@ -451,7 +451,7 @@ int Zustandsmaschine(int offen, int temperature, int humidity,int temp_up_thr, i
 			}
 	}else{
 		Serial.print("FENSTER ZU")
-		  if(humidity_down_thr < humidity) {
+		  if(humidity_down_thr > humidity) {
 			 if (Zustand == ZuWarm){
 				 Zustand = FeOZuWarmZuTrocken; //zu warm & zu trocken
 				 Serial.print("Zu warum und zu trocken");
@@ -470,18 +470,18 @@ int Zustandsmaschine(int offen, int temperature, int humidity,int temp_up_thr, i
   }else{ //fenster zu
 		Serial.print("Fenster zu");
 	  //TEMP
-	  if (temp_up_thr > temperature){
+	  if (temp_up_thr < temperature){
 				Zustand = FeZZuWarm; //zu warm (und feuchtigkeit ok)
 				Serial.print("Zu warm");
 	  }else{
-		  if (temp_down_thr < temperature){
+		  if (temp_down_thr > temperature){
 				Zustand = FeZZuKalt; //zu kalt (und feuchtigkeit ok)
 				Serial.print("zu kalt");
 		  }
 		}
 	  
 	  //Humid
-	 if (humidity_up_thr > humidity){
+	 if (humidity_up_thr < humidity){
 			if(Zustand == ZuWarm){
 				Zustand = FeZZuWarmZuFeucht; //zu warm & zu feucht
 				Serial.print("zu warm und zu feucht");
@@ -496,7 +496,7 @@ int Zustandsmaschine(int offen, int temperature, int humidity,int temp_up_thr, i
 				}
 			}
 	}else{
-		  if(humidity_down_thr < humidity) {
+		  if(humidity_down_thr > humidity) {
 			 if (Zustand == ZuWarm){
 				 Zustand = FeZZuWarmZuTrocken; //zu warm & zu trocken
 				Serial.print("Zu warm und zu trocken");
