@@ -37,7 +37,7 @@ SimpleDHT11 dht11;
 enum WaitFor { OK ,SEND_OK, READY };
 
 
-//	      0	       1	  2	     3			4		   5		       6		   7		8	     9		10	   11		      12		 13		     14			 15	      16
+
 enum Zustand {AllesOk, FeOZuWarm, FeOZuKalt, FeOZuWarmZuFeucht, FeOZuKaltZuFeucht, FeOZuWarmZuTrocken, FeOZuKaltZuTrocken, FeOZuFeucht, FeOZuTrocken,FeZZuWarm, FeZZuKalt, FeZZuWarmZuFeucht, FeZZuKaltZuFeucht, FeZZuWarmZuTrocken, FeZZuKaltZuTrocken, FeZZuFeucht, FeZZuTrocken };
 
 
@@ -177,79 +177,12 @@ void loop() {
 	//  Zustand = FensterZu;
   }
   
-  Zustand = AllesOk;
   
-  //Fenster offen
-  if (offen == 1){
-	  //TEMP
-	  if (temp_up_thr > temperature){
-				Zustand = FeOZuWarm; //zu warm (und feuchtigkeit ok)
-	  }else{
-		  if (temp_down_thr < temperature){
-				Zustand = FeOZuKalt; //zu kalt (und feuchtigkeit ok)
-		  }
-		}
-	  
-	  //Humid
-	 if (humidity_up_thr > humidity){
-			if(Zustand == ZuWarm)
-				Zustand = FeOZuWarmZuFeucht; //zu warm & zu feucht
-			else{ 
-				if (Zustand == ZuKalt){
-					Zustand = FeOZuKaltZuFeucht; //zu kalt & zu feucht
-			    }else{
-					Zustand = FeOZuFeucht; //nur zu feucht
-				}
-			}
-	}else{
-		  if(humidity_down_thr < humidity) {
-			 if (Zustand == ZuWarm)
-				 Zustand = FeOZuWarmZuTrocken; //zu warm & zu trocken
-			 else{
-				 if (Zustand == 2){
-					Zustand = FeOZuKaltZuTrocken; //zu kalt & zu trocken
-				 }else{
-					 Zustand = FeOZuTrocken; //nur zu trocken
-				 }
-			 }
-		  }
-	  }
-  }else{ //fenster zu
+  
+  int Zustand;
+  Zustand = Zustandsmaschine(offen,temperature,humidity,temp_up_thr,temp_down_thr,humidity_up_thr,humidity_down_thr){
 
-	  //TEMP
-	  if (temp_up_thr > temperature){
-				Zustand = FeZZuWarm; //zu warm (und feuchtigkeit ok)
-	  }else{
-		  if (temp_down_thr < temperature){
-				Zustand = FeZZuKalt; //zu kalt (und feuchtigkeit ok)
-		  }
-		}
-	  
-	  //Humid
-	 if (humidity_up_thr > humidity){
-			if(Zustand == ZuWarm)
-				Zustand = FeZZuWarmZuFeucht; //zu warm & zu feucht
-			else{ 
-				if (Zustand == ZuKalt){
-					Zustand = FeZZuKaltZuFeucht; //zu kalt & zu feucht
-			    }else{
-					Zustand = FeZZuFeucht; //nur zu feucht
-				}
-			}
-	}else{
-		  if(humidity_down_thr < humidity) {
-			 if (Zustand == ZuWarm)
-				 Zustand = FeZZuWarmZuTrocken; //zu warm & zu trocken
-			 else{
-				 if (Zustand == 2){
-					Zustand = FeZZuKaltZuTrocken; //zu kalt & zu trocken
-				 }else{
-					 Zustand = FeZZuTrocken; //nur zu trocken
-				 }
-			 }
-		  }
-	  }  
-  }
+ 
   /*
   if(Zustand % 2 == 0)
 	  Serial.println("Zu kalt...");
@@ -484,5 +417,108 @@ long microsecondsToCentimeters(long microseconds)
   // The ping travels out and back, so to find the distance of the
   // object we take half of the distance travelled.
   return microseconds / 29 / 2;
+}
+
+int Zustandsmaschine(int offen, int temperature, int humidity,int temp_up_thr, int temp_down_thr, int humidity_up_thr,int humidity_down_thr){
+	 
+ int Zustand = AllesOk;	 
+ if (offen == 1){
+	  Serial.println("Fenster offen");
+	  //TEMP
+	  if (temp_up_thr > temperature){
+				Zustand = FeOZuWarm; //zu warm (und feuchtigkeit ok)
+				Serial.println("Zu warm");
+	  }else{
+		  if (temp_down_thr < temperature){
+				Zustand = FeOZuKalt; //zu kalt (und feuchtigkeit ok)
+				Serial.print("Zu kalt");
+		  }
+		}
+	  
+	  //Humid
+	 if (humidity_up_thr > humidity){
+			if(Zustand == ZuWarm)
+				Zustand = FeOZuWarmZuFeucht; //zu warm & zu feucht
+				Serial.println("Zu feucht & zu warm");
+			else{ 
+				if (Zustand == ZuKalt){
+					Zustand = FeOZuKaltZuFeucht; //zu kalt & zu feucht
+					Serial.print("Zu feucht & zu warm");
+				}else{
+					Zustand = FeOZuFeucht; //nur zu feucht
+					Serial.print("Nur zu feucht");
+				}
+			}
+	}else{
+		Serial.print("FENSTER ZU")
+		  if(humidity_down_thr < humidity) {
+			 if (Zustand == ZuWarm){
+				 Zustand = FeOZuWarmZuTrocken; //zu warm & zu trocken
+				 Serial.print("Zu warum und zu trocken");
+				}
+			 else{
+				 if (Zustand == 2){
+					Zustand = FeOZuKaltZuTrocken; //zu kalt & zu trocken
+					Serial.print("Zu kalt und zu trocken");
+				 }else{
+					 Zustand = FeOZuTrocken; //nur zu trocken
+					Serial.print("nur zu trocken");
+				 }
+			 }
+		  }
+	  }
+  }else{ //fenster zu
+		Serial.print("Fenster zu");
+	  //TEMP
+	  if (temp_up_thr > temperature){
+				Zustand = FeZZuWarm; //zu warm (und feuchtigkeit ok)
+				Serial.print("Zu warm");
+	  }else{
+		  if (temp_down_thr < temperature){
+				Zustand = FeZZuKalt; //zu kalt (und feuchtigkeit ok)
+				Serial.print("zu kalt");
+		  }
+		}
+	  
+	  //Humid
+	 if (humidity_up_thr > humidity){
+			if(Zustand == ZuWarm){
+				Zustand = FeZZuWarmZuFeucht; //zu warm & zu feucht
+				Serial.print("zu warm und zu feucht");
+				}
+			else{ 
+				if (Zustand == ZuKalt){
+					Zustand = FeZZuKaltZuFeucht; //zu kalt & zu feucht
+					Serial.print("Zu kalt und zu feucht");
+				}else{
+					Zustand = FeZZuFeucht; //nur zu feucht
+					Serial.print("Nur zu feucht");
+				}
+			}
+	}else{
+		  if(humidity_down_thr < humidity) {
+			 if (Zustand == ZuWarm){
+				 Zustand = FeZZuWarmZuTrocken; //zu warm & zu trocken
+				Serial.print("Zu warm und zu trocken");
+				}
+			 else{
+				 if (Zustand == 2){
+					Zustand = FeZZuKaltZuTrocken; //zu kalt & zu trocken
+					Serial.print("Zu kalt und zu trocken");
+				 }else{
+					 Zustand = FeZZuTrocken; //nur zu trocken
+					Serial.print("Nur zu trocken");
+				 }
+			 }
+		  }
+	  }  
+  }	
+	
+	
+  return Zustand;
+	
+	
+	
+	
 }
 
