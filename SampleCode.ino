@@ -36,7 +36,12 @@ SimpleDHT11 dht11;
 
 enum WaitFor { OK ,SEND_OK, READY };
 
-enum Zustand {FensterZu, ZuWarm, ZuKalt, ZuWarmZuFeucht, ZuKaltZuFeucht, ZuWarmZuTrocken, ZuKaltZuTrocken, ZuFeucht, ZuTrocken };
+
+
+enum Zustand {AllesOk, FeOZuWarm, FeOZuKalt, FeOZuWarmZuFeucht, FeOZuKaltZuFeucht, FeOZuWarmZuTrocken, FeOZuKaltZuTrocken, FeOZuFeucht, FeOZuTrocken,FeZZuWarm, FeZZuKalt, FeZZuWarmZuFeucht, FeZZuKaltZuFeucht, FeZZuWarmZuTrocken, FeZZuKaltZuTrocken, FeZZuFeucht, FeZZuTrocken };
+
+
+
 
 
 #define ESP8266 Serial3
@@ -169,44 +174,81 @@ void loop() {
 	  offen = 1;
   }else{
 	  offen = 0;
-	  Zustand = FensterZu;
+	//  Zustand = FensterZu;
   }
   
+  Zustand = AllesOk;
+  
+  //Fenster offen
   if (offen == 1){
-	  
 	  //TEMP
 	  if (temp_up_thr > temperature){
-				Zustand = ZuWarm; //zu warm (und feuchtigkeit ok)
+				Zustand = FeOZuWarm; //zu warm (und feuchtigkeit ok)
 	  }else{
 		  if (temp_down_thr < temperature){
-				Zustand = ZuKalt; //zu kalt (und feuchtigkeit ok)
+				Zustand = FeOZuKalt; //zu kalt (und feuchtigkeit ok)
 		  }
 		}
 	  
 	  //Humid
 	 if (humidity_up_thr > humidity){
 			if(Zustand == ZuWarm)
-				Zustand = ZuWarmZuFeucht; //zu warm & zu feucht
+				Zustand = FeOZuWarmZuFeucht; //zu warm & zu feucht
 			else{ 
 				if (Zustand == ZuKalt){
-					Zustand = ZuKaltZuFeucht; //zu kalt & zu feucht
+					Zustand = FeOZuKaltZuFeucht; //zu kalt & zu feucht
 			    }else{
-					Zustand = ZuFeucht; //nur zu feucht
+					Zustand = FeOZuFeucht; //nur zu feucht
 				}
 			}
 	}else{
 		  if(humidity_down_thr < humidity) {
 			 if (Zustand == ZuWarm)
-				 Zustand = ZuWarmZuTrocken; //zu warm & zu trocken
+				 Zustand = FeOZuWarmZuTrocken; //zu warm & zu trocken
 			 else{
 				 if (Zustand == 2){
-					Zustand = ZuKaltZuTrocken; //zu kalt & zu trocken
+					Zustand = FeOZuKaltZuTrocken; //zu kalt & zu trocken
 				 }else{
-					 Zustand = ZuTrocken; //nur zu trocken
+					 Zustand = FeOZuTrocken; //nur zu trocken
 				 }
 			 }
 		  }
 	  }
+  }else{ //fenster zu
+
+	  //TEMP
+	  if (temp_up_thr > temperature){
+				Zustand = FeZZuWarm; //zu warm (und feuchtigkeit ok)
+	  }else{
+		  if (temp_down_thr < temperature){
+				Zustand = FeZZuKalt; //zu kalt (und feuchtigkeit ok)
+		  }
+		}
+	  
+	  //Humid
+	 if (humidity_up_thr > humidity){
+			if(Zustand == ZuWarm)
+				Zustand = FeZZuWarmZuFeucht; //zu warm & zu feucht
+			else{ 
+				if (Zustand == ZuKalt){
+					Zustand = FeZZuKaltZuFeucht; //zu kalt & zu feucht
+			    }else{
+					Zustand = FeZZuFeucht; //nur zu feucht
+				}
+			}
+	}else{
+		  if(humidity_down_thr < humidity) {
+			 if (Zustand == ZuWarm)
+				 Zustand = FeZZuWarmZuTrocken; //zu warm & zu trocken
+			 else{
+				 if (Zustand == 2){
+					Zustand = FeZZuKaltZuTrocken; //zu kalt & zu trocken
+				 }else{
+					 Zustand = FeZZuTrocken; //nur zu trocken
+				 }
+			 }
+		  }
+	  }  
   }
   /*
   if(Zustand % 2 == 0)
