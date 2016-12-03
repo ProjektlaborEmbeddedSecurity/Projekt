@@ -7,7 +7,7 @@ This repository contains a running version of the current software on the master
 The project itself was tested on Arduino DUE and should work with Mega, too. 
 
 ### Hardware - Sensors
-For humidity and temperature the sensor DHT11 was used. 
+For humidity and temperature the sensor DHT11 was used with an accuracy of 5% by humidity at 25 °C and 2°C. 
 For distance measurement an ultrasonic sensor HC - SR04 was used, providing 2cm - 400cm distance measurement with an accuracy of 3mm. 
 
 ### Hardware - Wifi-Module
@@ -18,3 +18,4 @@ As a Wifi-Module the ESP8266 was used which runs on 3.3V.
 As a target IoT Platform the Adafruit IO platform was used: io.adafruit.com . Which is still in the beta-phase. Note that Adafruit does not give out any library supporting Arduino Due with a Wifi-Module. 
 
 # Dependencies
+SimpleDHT11 . This Depence can be installed via Arduino IDE
