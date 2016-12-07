@@ -59,13 +59,13 @@ int Zustandsmaschine(int offen, int temperature, int humidity){
   }
   else{ //fenster zu
     //TEMP
-    if (temp_up_thr > temperature)
+    if (temp_up_thr < temperature)
         Zustand = FeZZuWarm; //zu warm (und feuchtigkeit ok)
-    else if (temp_down_thr < temperature)
+    else if (temp_down_thr > temperature)
         Zustand = FeZZuKalt; //zu kalt (und feuchtigkeit ok)
     
     //Humid
-	if (humidity_up_thr > humidity){
+	if (humidity_up_thr < humidity){
       if(Zustand == FeZZuWarm)
         Zustand = FeZZuWarmZuFeucht; //zu warm & zu feucht
       else if (Zustand == FeZZuKalt)
@@ -74,7 +74,7 @@ int Zustandsmaschine(int offen, int temperature, int humidity){
           Zustand = FeZZuFeucht; //nur zu feucht
 	}
 	else{
-      if(humidity_down_thr < humidity) {
+      if(humidity_down_thr > humidity) {
        if (Zustand == FeZZuWarm)
          Zustand = FeZZuWarmZuTrocken; //zu warm & zu trocken
        else if (Zustand == FeZZuKalt)
